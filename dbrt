@@ -1,0 +1,21 @@
+#!/bin/bash
+# 将所有参数连接成一个字符串
+movie_name=$(echo "$@" | tr ' ' '+')
+
+# 从豆瓣电影中搜索电影
+html=$(curl -s "https://www.douban.com/search?q=${movie_name}&cat=1002")
+
+# 提取电影名称和评分
+names=$(echo "$html" | grep -o '<a href="https://www.douban.com/link.*</a>' | sed -n 's/.*>\(.*\)<\/a>/\1/p')
+ratings=$(echo "$html" | grep -o '<span class="rating_nums">[0-9.]*</span>' | sed 's/<[^>]*>//g')
+
+# 将评分列表分隔成数组
+#name_arr=($(echo "$names"))
+#rating_arr=($(echo "$ratings"))
+IFS=$'\n' read -d '' -r -a name_arr <<< "$names"
+IFS=$'\n' read -d '' -r -a rating_arr <<< "$ratings"
+
+for i in "${!name_arr[@]}"; do
+    echo "${name_arr[i]}: ${rating_arr[i]}"
+done
+
