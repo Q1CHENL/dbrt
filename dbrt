@@ -7,7 +7,7 @@ html=$(curl -s "https://www.douban.com/search?q=${movie_name}&cat=1002")
 
 # 提取电影名称和评分
 names=$(echo "$html" | grep -o '<a href="https://www.douban.com/link.*</a>' | sed -n 's/.*>\(.*\)<\/a>/\1/p')
-ratings=$(echo "$html" | grep -o '<span class="rating_nums">[0-9.]*</span>' | sed 's/<[^>]*>//g')
+ratings=$(echo "$html" | grep -oE '<span class="(pl|rating_nums)">[0-9.]*|\(尚未上映\)|\(暂无评分\)</span>' | sed 's/<[^>]*>//g')
 
 # 将评分列表分隔成数组
 #name_arr=($(echo "$names"))
